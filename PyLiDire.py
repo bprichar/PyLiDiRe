@@ -11,6 +11,12 @@ class FortranAsciiReader(file):
         """
         Read from file into the given objects
         """
+        # Read in line
+        # Tokenize line into a list
+            # Split on ',' and whitespace, handling quoted strings, and repetition
+            # Assign elements one-by-one into args, skipping empty fields
+            # If line contained '/' or read into all varialbes, return
+            # else, read in next line and continue tokenizing/assigning
         pass
 
 class FortranCharacter:
