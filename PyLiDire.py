@@ -43,8 +43,15 @@ class FortranComplex:
     """
     pass
 
+class FortranLogical:
+    """
+    Mimick the Fortran Logical type
+    """
+    pass
+
 def tokenize(line):
     """
     Tokenize the given line according to Fortran
     list-directed read rules.
     """
+    pass
