@@ -36,3 +36,9 @@ class FortranReal:
     Mimick the Fortran Real type
     """
     pass
+
+class FortranComplex:
+    """
+    Mimick the Fortran Complex type
+    """
+    pass
