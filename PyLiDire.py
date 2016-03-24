@@ -14,7 +14,7 @@ class FortranAsciiReader(file):
         # Read in line
         # Tokenize line into a list
             # Split on ',' and whitespace, handling quoted strings, and repetition
-            # Assign elements one-by-one into args, skipping empty fields
+            # Assign elements one-by-one into args, skipping empty fields and stopping at a '/'
             # If line contained '/' or read into all varialbes, return
             # else, read in next line and continue tokenizing/assigning
         pass
@@ -42,3 +42,9 @@ class FortranComplex:
     Mimick the Fortran Complex type
     """
     pass
+
+def tokenize(line):
+    """
+    Tokenize the given line according to Fortran
+    list-directed read rules.
+    """
