@@ -6,20 +6,29 @@ import math
 
 class FortranAsciiReader(file):
 
-    def __init__(self, name):
-        self._filename = name
-
     def read(self, *args):
         """
         Read from file into the given objects
         """
-        # Read in line
-        # Tokenize line into a list
-            # Split on ',' and whitespace, handling quoted strings, and repetition
+        num_args = len(args)
+        num_read = 0
+        encountered_slash = False
+        # If line contained '/' or read into all varialbes, we're done
+        while num_read < num_args and not encountered_slash:
+            line = self.readline()
+            values = tokenize(line)
             # Assign elements one-by-one into args, skipping empty fields and stopping at a '/'
-            # If line contained '/' or read into all varialbes, return
-            # else, read in next line and continue tokenizing/assigning
-        pass
+            for val in values:
+                if val == '/':
+                    encountered_slash = True
+                    break
+                elif val == '':
+                    pass
+                else:
+                    args[num_read].assign(val)
+                    num_read += 1
+                    if num_read == num_args:
+                        break
 
 class FortranCharacter:
     """
@@ -719,4 +728,5 @@ def tokenize(line):
     Tokenize the given line according to Fortran
     list-directed read rules.
     """
+    # Split on ',' and whitespace, handling quoted strings, and repetition
     pass
