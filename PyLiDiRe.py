@@ -669,7 +669,24 @@ class FortranLogical:
     """
     Mimick the Fortran Logical type
     """
-    pass
+
+    def __init__(self, value=None):
+        if value is not None:
+            self._value = bool(value)
+        else:
+            self._value = None
+
+    def __str__(self):
+        return str(self._value)
+
+    def __repr__(self):
+        return repr(self._value)
+
+    def __format__(self, formatstr):
+        return self._value.__format__(formatstr)
+
+    def assign(self, value):
+        self._value = bool(value)
 
 def tokenize(line):
     """
