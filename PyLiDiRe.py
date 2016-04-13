@@ -26,9 +26,21 @@ class FortranCharacter:
     Mimick the Fortran Character type
     """
 
-    def __init__(self, value=None):
+    def __init__(self, value=None, length=None):
+        if length is not None:
+            self._length = int(length)
+        else:
+            self._length = None
         if value is not None:
-            self._value = str(value)
+            if self._length is not None:
+                if len(str(value)) > self._length:
+                    self._value = str(value)[0:self._length-1]
+                else:
+                    self._value = str(value)
+                    for i in xrange(self._length - len(str(value))):
+                        self._value += " "
+            else:
+                self._value = str(value)
         else:
             self._value = None
 
@@ -71,8 +83,22 @@ class FortranCharacter:
     def __repr__(self):
         return repr(self._value)
 
+    def __len__(self):
+        if self._length is not None:
+            return self._length
+        else:
+            return len(self._value)
+
     def assign(self, value):
-        self._value = str(value)
+        if self._length is not None:
+            if len(str(value)) > self._length:
+                self._value = str(value)[0:self._length-1]
+            else:
+                self._value = str(value)
+                for i in xrange(self._length - len(str(value))):
+                    self._value += " "
+        else:
+            self._value = str(value)
 
 class FortranInteger:
     """
