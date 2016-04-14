@@ -729,4 +729,33 @@ def tokenize(line):
     list-directed read rules.
     """
     # Split on ',' and whitespace, handling quoted strings, and repetition
-    pass
+    quote = '"\''
+    whitespace = "\t\n\x20"
+    separator = ","
+    inside_str = False
+    token_started = False
+    token = ""
+    tokens = []
+    separated = False
+    add_token = False
+    idx = 0
+    repeat_next_token = False
+    repeat_count = 0
+    for idx, char enumerate(line):
+        if char in quote:
+            if not inside_str:
+                start_quote = char
+                inside_str = True
+            elif char == start_quote:
+                inside_str = False
+                add_token = True
+            else:
+                token += char
+        elif char == "*" and not inside_str:
+            repeat_next_token = true
+            repeat_index = idx
+            while repeat_index > 0 and line[repeat_index-1] not in (whitespace + separator):
+                repeat_index -= 1
+            repeat_count = int(line[repeat_index:idx-1]
+        elif char in separator and not inside_str:
+            if 
