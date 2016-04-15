@@ -733,15 +733,15 @@ def tokenize(line):
     whitespace = "\t\n\x20"
     separator = ","
     inside_str = False
-    token_started = False
     token = ""
     tokens = []
     separated = False
     add_token = False
+    just_added = False
     idx = 0
     repeat_next_token = False
     repeat_count = 0
-    for idx, char enumerate(line):
+    for idx, char in enumerate(line):
         if char in quote:
             if not inside_str:
                 start_quote = char
@@ -756,6 +756,28 @@ def tokenize(line):
             repeat_index = idx
             while repeat_index > 0 and line[repeat_index-1] not in (whitespace + separator):
                 repeat_index -= 1
-            repeat_count = int(line[repeat_index:idx-1]
+            repeat_count = int(line[repeat_index:idx-1])
         elif char in separator and not inside_str:
-            if 
+            if repeat_next_token:
+                if token:
+                    add_token = True
+                else:
+                    for i in xrange(repeat_count-1):
+                        tokens.append("")
+            else:
+                if not just_added:
+                    tokens.append("")
+                just_added = False
+        elif char in whitespace and not inside_str:
+            if token:
+                add_token = True
+                just_added = True
+        if add_token:
+            if repeat_next_token:
+                for i in xrange(repeat_count):
+                    tokens.append(token)
+            else:
+                tokens.append(token)
+        else:
+            token += char
+    return tokens
