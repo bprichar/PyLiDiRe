@@ -733,6 +733,8 @@ def tokenize(line):
     whitespace = "\t\n\x20"
     separator = ","
     inside_str = False
+    inside_complex = False
+    skip_char = False
     token = ""
     tokens = []
     separated = False
@@ -746,18 +748,24 @@ def tokenize(line):
             if not inside_str:
                 start_quote = char
                 inside_str = True
+                skip_char = True
             elif char == start_quote:
                 inside_str = False
                 add_token = True
-            else:
-                token += char
-        elif char == "*" and not inside_str:
+        elif char in '(' and not inside_str:
+            inside_complex = True
+            skip_char = True
+        elif char in ')' and not inside_str:
+            inside_complex = False
+            add_token = True
+            token = token.replace(',', '+') + 'j'
+        elif char == "*" and not (inside_str or inside_complex):
             repeat_next_token = true
             repeat_index = idx
             while repeat_index > 0 and line[repeat_index-1] not in (whitespace + separator):
                 repeat_index -= 1
             repeat_count = int(line[repeat_index:idx-1])
-        elif char in separator and not inside_str:
+        elif char in separator and not (inside_str or inside_complex):
             if repeat_next_token:
                 if token:
                     add_token = True
@@ -768,7 +776,7 @@ def tokenize(line):
                 if not just_added:
                     tokens.append("")
                 just_added = False
-        elif char in whitespace and not inside_str:
+        elif char in whitespace and not (inside_str or inside_complex):
             if token:
                 add_token = True
                 just_added = True
@@ -779,5 +787,8 @@ def tokenize(line):
             else:
                 tokens.append(token)
         else:
-            token += char
+            if skip_char:
+                skip_char = False
+            else:
+                token += char
     return tokens
