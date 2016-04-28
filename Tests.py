@@ -29,3 +29,13 @@ def test_read_just_complex():
     var = PyLiDiRe.FortranComplex()
     reader.read(var)
     assert var == complex(1.2,3.4)
+
+def test_read_multiple():
+    reader = PyLiDiRe.FortranAsciiReader('multiple.txt')
+    cvar = PyLiDiRe.FortranCharacter()
+    fvar = PyLiDiRe.FortranReal()
+    ivar = PyLiDiRe.FortranInteger()
+    reader.read(cvar, fvar, ivar)
+    assert cvar == 'Yep'
+    assert fvar == 12.34
+    assert ivar == 56
