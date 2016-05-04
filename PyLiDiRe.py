@@ -734,61 +734,175 @@ def tokenize(line):
     separator = ","
     inside_str = False
     inside_complex = False
-    skip_char = False
+    repeat_next_token = False
+    just_added = False
     token = ""
     tokens = []
-    separated = False
-    add_token = False
-    just_added = False
-    idx = 0
-    repeat_next_token = False
     repeat_count = 0
-    for idx, char in enumerate(line):
-        if char in quote:
-            if not inside_str:
-                start_quote = char
-                inside_str = True
-                skip_char = True
-            elif char == start_quote:
-                inside_str = False
-                add_token = True
-        elif char in '(' and not inside_str:
-            inside_complex = True
-            skip_char = True
-        elif char in ')' and not inside_str:
-            inside_complex = False
-            add_token = True
-            token = token.replace(',', '+') + 'j'
-        elif char == "*" and not (inside_str or inside_complex):
-            repeat_next_token = true
-            repeat_index = idx
-            while repeat_index > 0 and line[repeat_index-1] not in (whitespace + separator):
-                repeat_index -= 1
-            repeat_count = int(line[repeat_index:idx-1])
-        elif char in separator and not (inside_str or inside_complex):
-            if repeat_next_token:
+    def state_to_string(b1, b2, b3, b4):
+        return str(b1)[0] + str(b2)[0] + str(b3)[0] + str(b4)[0]
+    for char in line:
+        state = state_to_string(inside_str,
+                                inside_complex,
+                                repeat_next_token,
+                                just_added)
+        if state == 'FFFF':
+            if char in whitespace:
                 if token:
-                    add_token = True
-                else:
-                    for i in xrange(repeat_count-1):
-                        tokens.append("")
-            else:
-                if not just_added:
-                    tokens.append("")
-                just_added = False
-        elif char in whitespace and not (inside_str or inside_complex):
-            if token:
-                add_token = True
-                just_added = True
-        if add_token:
-            if repeat_next_token:
-                for i in xrange(repeat_count):
                     tokens.append(token)
-            else:
+                    token = ""
+                    just_added = True
+            elif char in separator:
                 tokens.append(token)
-        else:
-            if skip_char:
-                skip_char = False
+                token = ""
+            elif char in quote:
+                if not token:
+                    inside_str = True
+                    start_quote = char
+                else:
+                    raise Exception()
+            elif char == '(':
+                if not token:
+                    inside_complex = True
+                else:
+                    raise Exception()
+            elif char == ')':
+                raise Exception()
+            elif char == '*':
+                if token:
+                    repeat_next_token = True
+                    repeat_count = int(token)
+                    token = ''
+                else:
+                    raise Exception()
+            elif char == '/':
+                if token:
+                    tokens.append(token)
+                tokens.append(char)
+                break
             else:
                 token += char
+        elif state == 'TFFF':
+            if char in quote:
+                if char == start_quote:
+                    if token[-1] == '\\':
+                        token = token[0:-1] + char
+                    else:
+                        tokens.append(token)
+                        token = ''
+                        just_added = True
+                        inside_str = False
+                else:
+                    token += char
+            else:
+                token += char
+        elif state == 'FTFF':
+            if char == ')':
+                token = token.replace(',', '+') + 'j'
+                tokens.append(token)
+                token = ''
+                just_added = True
+                inside_complex = False
+            elif char in quote + '(*/':
+                raise Exception()
+            else:
+                token += char
+        elif state == 'FFTF':
+            if char in whitespace:
+                if token:
+                    for i in xrange(repeat_count):
+                        tokens.append(token)
+                    token = ''
+                    just_added = True
+                    repeat_next_token = False
+                else:
+                    raise Exception()
+            elif char in separator:
+                if token:
+                    for i in xrange(repeat_count):
+                        tokens.append(token)
+                    token = ''
+                    just_added = True
+                    repeat_next_token = False
+                else:
+                    for i in xrange(repeat_count - 1):
+                        tokens.append(token)
+                    token = ''
+                    just_added = True
+                    repeat_next_token = False
+            elif char in quote:
+                if not token:
+                    inside_str = True
+                    start_quote = char
+                else:
+                    raise Exception()
+            elif char == '(':
+                if not token:
+                    inside_complex = True
+                else:
+                    raise Exception()
+            elif char in ')*':
+                raise Exception()
+            elif char == '/':
+                if token:
+                    for i in xrange(repeat_count):
+                        tokens.append(token)
+                    tokens.append(char)
+                    break
+                else:
+                    raise Exception()
+            else:
+                token += char
+        elif state == 'FFFT':
+            if char in whitespace:
+                pass
+            elif char in separator:
+                just_added = False
+            elif char in quote:
+                inside_str = True
+                start_quote = char
+                just_added = False
+            elif char == '(':
+                inside_complex = True
+                just_added = False
+            elif char in ')*':
+                raise Exception()
+            elif char == '/':
+                tokens.append(char)
+                break
+            else:
+                token += char
+                just_added = False
+        elif state == 'TFTF':
+            if char in quote:
+                if char == start_quote:
+                    if token[-1] == '\\':
+                        token = token [0:-1] + char
+                    else:
+                        for i in xrange(repeat_count):
+                            tokens.append(token)
+                        token = ''
+                        just_added = True
+                        repeat_next_token = False
+                        inside_str = False
+                else:
+                    token += char
+            else:
+                token += char
+        elif state == 'FTTF':
+            if char == ')':
+                token = token.replace(',', '+') + 'j'
+                for i in xrange(repeat_count):
+                    tokens.append(token)
+                token = ''
+                just_added = True
+                repeat_next_token = False
+                inside_complex = False
+            elif char in quote + '(*/':
+                raise Exception()
+            else:
+                token += char
+        else:
+            # No other states should be possible
+            raise Exception()
     return tokens
