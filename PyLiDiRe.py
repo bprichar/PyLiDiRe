@@ -818,18 +818,11 @@ def tokenize(line):
                 else:
                     raise Exception()
             elif char in separator:
-                if token:
-                    for i in xrange(repeat_count):
-                        tokens.append(token)
-                    token = ''
-                    just_added = True
-                    repeat_next_token = False
-                else:
-                    for i in xrange(repeat_count - 1):
-                        tokens.append(token)
-                    token = ''
-                    just_added = True
-                    repeat_next_token = False
+                for i in xrange(repeat_count):
+                    tokens.append(token)
+                token = ''
+                just_added = True
+                repeat_next_token = False
             elif char in quote:
                 if not token:
                     inside_str = True
