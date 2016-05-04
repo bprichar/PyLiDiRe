@@ -39,3 +39,27 @@ def test_read_multiple():
     assert cvar == 'Yep'
     assert fvar == 12.34
     assert ivar == 56
+
+def test_read_complicated():
+    reader = PyLiDiRe.FortranAsciiReader('complicated.txt')
+    cvar1 = PyLiDiRe.FortranComplex()
+    cvar2 = PyLiDiRe.FortranComplex()
+    cvar3 = PyLiDiRe.FortranComplex()
+    cvar4 = PyLiDiRe.FortranComplex()
+    svar1 = PyLiDiRe.FortranCharacter()
+    svar2 = PyLiDiRe.FortranCharacter()
+    svar3 = PyLiDiRe.FortranCharacter()
+    svar4 = PyLiDiRe.FortranCharacter()
+    svar5 = PyLiDiRe.FortranCharacter()
+    svar6 = PyLiDiRe.FortranCharacter()
+    reader.read(cvar1, cvar2, cvar3, cvar4, svar1, svar2, svar3, svar4, svar5, svar6)
+    assert cvar1 == complex(3.,2.)
+    assert cvar2 == complex(3.,2.)
+    assert cvar3 == complex(3.,2.)
+    assert cvar4 == complex(3.,2.)
+    assert svar1 == None
+    assert svar2 == None
+    assert svar3 == 'hello'
+    assert svar4 == 'hello'
+    assert svar5 == 'hello'
+    assert svar6 == 'hello'
