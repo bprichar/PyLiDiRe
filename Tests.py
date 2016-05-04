@@ -63,3 +63,15 @@ def test_read_complicated():
     assert svar4 == 'hello'
     assert svar5 == 'hello'
     assert svar6 == 'hello'
+
+def test_read_multiline():
+    reader = PyLiDiRe.FortranAsciiReader('multiline.txt')
+    var1 = PyLiDiRe.FortranCharacter()
+    var2 = PyLiDiRe.FortranCharacter()
+    var3 = PyLiDiRe.FortranCharacter()
+    var4 = PyLiDiRe.FortranCharacter()
+    reader.read(var1, var2, var3, var4)
+    assert var1 == 'Hello'
+    assert var2 == 'World'
+    assert var3 == 'Tada'
+    assert var4 == None
